@@ -196,6 +196,11 @@ task :spotxchange do
   save_as_csv :spotxchange, :spotxchange
 end
 
+desc 'Collect email data'
+task :mediabong do
+  save_as_csv :mediabong, :email
+end
+
 def date
   @date ||= ENV['date'].nil? ? Date.today - 1 : Date.today - ENV['date'].to_i
 end

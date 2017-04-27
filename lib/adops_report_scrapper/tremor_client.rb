@@ -14,7 +14,6 @@ class AdopsReportScrapper::TremorClient < AdopsReportScrapper::BaseClient
   def login
     @client.visit 'https://console.tremorhub.com/ssp'
     @client.driver.browser.manage.window.resize_to(1366,768)
-    byebug
     @client.fill_in 'username', :with => @login
     @client.fill_in 'password', :with => @secret
     @client.click_button 'Sign In'
@@ -78,7 +77,6 @@ class AdopsReportScrapper::TremorClient < AdopsReportScrapper::BaseClient
   end
 
   def extract_data_from_report
-    byebug
     page = Nokogiri::HTML @client.html
     rows = page.xpath '//table[@id="DataTables_Table_1"]/*/tr'
     @data = rows.map { |tr| tr.css('td,th').map { |td| td.text } }

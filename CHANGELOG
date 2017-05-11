@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 0.2.12
+fix springserve client, use their rest api instead
+
 ## 0.2.11
 bug fix
 implement email client

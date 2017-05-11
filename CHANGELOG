@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## 0.2.12
+## 0.2.13
 fix springserve client, use their rest api instead
 
 ## 0.2.11

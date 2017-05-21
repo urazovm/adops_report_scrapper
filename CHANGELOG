@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 0.2.15
+add anyclip
+
 ## 0.2.14
 expose ssl cert verify option for email client
 

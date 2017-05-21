@@ -22,6 +22,7 @@ class AdopsReportScrapper::EmailClient < AdopsReportScrapper::BaseClient
     @imap_ssl = @options['imap_ssl']
     @title = @options['title'] # supports data macro e.g. `XXX Report %Y-%m-%d` will match XXX Report `2017-04-26`
     @date_column = @options['date_column'] # optional. supports data macro e.g. `0||%Y-%m-%d` will match rows that has `2017-04-26` for their first column
+    @imap_ssl_verify = @options['imap_ssl_verify'].nil? ? true : @options['imap_ssl_verify']
   end
 
   def before_quit_with_error
@@ -32,7 +33,7 @@ class AdopsReportScrapper::EmailClient < AdopsReportScrapper::BaseClient
     email_received_date = Net::IMAP.format_date(@date+1)
     title = @date.strftime(@title)
 
-    imap = Net::IMAP.new(@imap_server, @imap_port, @imap_ssl)
+    imap = Net::IMAP.new(@imap_server, @imap_port, @imap_ssl, nil, @imap_ssl_verify)
     imap.login(@login, @secret)
     imap.select('INBOX')
     report_email_ids = imap.search(['ON', email_received_date, 'SUBJECT', title])

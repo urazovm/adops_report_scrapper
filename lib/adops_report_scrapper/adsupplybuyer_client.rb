@@ -5,7 +5,7 @@ require 'rest-client'
 class AdopsReportScrapper::AdsupplybuyerClient < AdopsReportScrapper::BaseClient
   def date_supported?(date = nil)
     _date = date || @date
-    return true if _date < Date.today
+    return true if _date < (Date.today + 1)
     false
   end
 

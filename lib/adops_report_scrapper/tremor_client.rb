@@ -66,7 +66,7 @@ class AdopsReportScrapper::TremorClient < AdopsReportScrapper::BaseClient
     flag_holding = true
     60.times do |_i| # wait 20 min
       begin
-        @client.find(:xpath, '//*[text()="Please Hold"]')
+        @client.find(:xpath, '//*[text()="Cancel Report"]')
       rescue Exception => e
         flag_holding = false
         break
@@ -78,7 +78,7 @@ class AdopsReportScrapper::TremorClient < AdopsReportScrapper::BaseClient
 
   def extract_data_from_report
     page = Nokogiri::HTML @client.html
-    rows = page.xpath '//table[@id="DataTables_Table_1"]/*/tr'
+    rows = page.xpath '//table[@id="DataTables_Table_0"]/*/tr'
     @data = rows.map { |tr| tr.css('td,th').map { |td| td.text } }
   end
 end

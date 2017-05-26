@@ -18,8 +18,9 @@ class AdopsReportScrapper::BaseClient
 
   # date: (optional)
   # return data in array of array, first array is the headers, no total included
-  def get_data(date = nil)
+  def get_data(date = nil, options = nil)
     @date = date if date
+    @options = options || {}
     fail "specified date is not supported by this scrapper #{self.class.name}" unless date_supported?
     init_client
     login

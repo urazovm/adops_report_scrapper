@@ -206,6 +206,11 @@ task :anyclip do
   save_as_csv :anyclip, :anyclip
 end
 
+desc 'Collect adsupplybuyer data'
+task :adsupplybuyer do
+  save_as_csv :adsupplybuyer, :adsupplybuyer
+end
+
 def date
   @date ||= ENV['date'].nil? ? Date.today - 1 : Date.today - ENV['date'].to_i
 end

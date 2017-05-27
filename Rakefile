@@ -211,6 +211,11 @@ task :adsupplybuyer do
   save_as_csv :adsupplybuyer, :adsupplybuyer
 end
 
+desc 'Collect adsparc data'
+task :adsparc do
+  save_as_csv :adsparc, :adsparc
+end
+
 def date
   @date ||= ENV['date'].nil? ? Date.today - 1 : Date.today - ENV['date'].to_i
 end

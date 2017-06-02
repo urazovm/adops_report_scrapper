@@ -33,7 +33,11 @@ class AdopsReportScrapper::AdsparcClient < AdopsReportScrapper::BaseClient
     @client.visit url
     sleep 5
     @client.find(:css, '#topCalendar').click
-    @client.find(:xpath, '//*[text()="Month to date "]').click
+    begin
+      @client.find(:xpath, '//*[text()="Month to date "]').click
+    rescue Exception => e
+      @client.find(:xpath, '//*[text()="Custom Range "]').click
+    end
     @client.find(:xpath, '//*[text()="Last 7 Days"]').click
     @client.click_button 'Apply'
     sleep 0.5

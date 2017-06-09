@@ -18,6 +18,10 @@ class AdopsReportScrapper::SovrnClient < AdopsReportScrapper::BaseClient
       sleep 1
       @client.find(:xpath, '//li[@data-value="logout"]').click
     end
+    if @client.find_all(:xpath, '//*[contains(text(),"Go to Login")]').count > 0
+      @client.find(:xpath, '//*[contains(text(),"Go to Login")]').click
+      sleep 1
+    end
     @client.fill_in 'login_username', :with => @login
     @client.fill_in 'login_password', :with => @secret
     @client.click_link 'Log In'

@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 0.2.23
+fix sovrn when hit session expire page before login
+
 ## 0.2.22
 popads buyer
 

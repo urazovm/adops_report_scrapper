@@ -211,6 +211,11 @@ task :adsupplybuyer do
   save_as_csv :adsupplybuyer, :adsupplybuyer
 end
 
+desc 'Collect popadsbuyer data'
+task :popadsbuyer do
+  save_as_csv :popadsbuyer, :popadsbuyer
+end
+
 desc 'Collect adsparc data'
 task :adsparc do
   save_as_csv :adsparc, :adsparc

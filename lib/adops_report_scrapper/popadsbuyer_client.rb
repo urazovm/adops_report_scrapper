@@ -41,11 +41,10 @@ class AdopsReportScrapper::PopadsbuyerClient < AdopsReportScrapper::BaseClient
   end
 
   def scrap_hourly
-    start_date_str = (@date - 1).strftime('%Y-%m-%d')
-    end_date_str = @date.strftime('%Y-%m-%d')
+    date_str = @date.strftime('%Y-%m-%d')
     time_zone_id = 'America%2FNew_York'
 
-    response = RestClient.post "https://www.popads.net/api/report_advertiser?key=#{@secret}&zone=#{time_zone_id}&start=#{start_date_str}%2000%3A00&end=#{end_date_str}%2023%3A59&groups=datetime%3Ahour", {}
+    response = RestClient.post "https://www.popads.net/api/report_advertiser?key=#{@secret}&zone=#{time_zone_id}&start=#{date_str}%2000%3A00&end=#{date_str}%2023%3A59&groups=datetime%3Ahour", {}
 
     data = JSON.parse response
     data = data['rows']

@@ -32,7 +32,7 @@ class AdopsReportScrapper::PopadsbuyerClient < AdopsReportScrapper::BaseClient
     response = RestClient.post "https://www.popads.net/api/report_advertiser?key=#{@secret}&zone=#{time_zone_id}&start=#{date_str}%2000%3A00&end=#{date_str}%2023%3A59&groups=campaign,datetime%3Aday", {}
 
     data = JSON.parse response
-    unless data[0]
+    unless data['rows'] && data['rows'][0]
       @data = []
       return
     end
@@ -51,7 +51,7 @@ class AdopsReportScrapper::PopadsbuyerClient < AdopsReportScrapper::BaseClient
     response = RestClient.post "https://www.popads.net/api/report_advertiser?key=#{@secret}&zone=#{time_zone_id}&start=#{date_str}%2000%3A00&end=#{date_str}%2023%3A59&groups=datetime%3Ahour", {}
 
     data = JSON.parse response
-    unless data[0]
+    unless data['rows'] && data['rows'][0]
       @data = []
       return
     end

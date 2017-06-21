@@ -79,7 +79,6 @@ class AdopsReportScrapper::TremorClient < AdopsReportScrapper::BaseClient
   def extract_data_from_report
     sleep 10
     page = Nokogiri::HTML @client.html
-    byebug
     rows = page.xpath '//table[@id="recentReportResults"]/*/tr'
     @data = rows.map { |tr| tr.css('td,th').map { |td| td.text } }
   end

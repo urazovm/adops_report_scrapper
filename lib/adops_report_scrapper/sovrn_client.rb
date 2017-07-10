@@ -1,5 +1,6 @@
 require 'date'
 require_relative 'base_client'
+require 'selenium-webdriver'
 
 class AdopsReportScrapper::SovrnClient < AdopsReportScrapper::BaseClient
   def date_supported?(date = nil)
@@ -8,11 +9,24 @@ class AdopsReportScrapper::SovrnClient < AdopsReportScrapper::BaseClient
     false
   end
 
+  def init_client
+    Capybara.register_driver :selenium do |app|
+      profile = Selenium::WebDriver::Firefox::Profile.new
+      @download_dir = '/tmp/sovrn'
+      profile['browser.download.dir'] = @download_dir
+      clean_up_download_dir
+      profile['browser.download.folderList'] = 2
+      profile['browser.helperApps.neverAsk.saveToDisk'] = 'application/octet-stream'
+      Capybara::Selenium::Driver.new(app, :browser => :firefox, :profile => profile)
+    end
+    @client = Capybara::Session.new(:selenium)
+  end
+
   private
 
   def login
     @client.visit 'https://meridian.sovrn.com/#welcome'
-    sleep 5
+    sleep 1
     if @client.find_all(:css, '#user-menu-trigger').count > 0
       @client.find_all(:css, '#user-menu-trigger').first.click
       sleep 1
@@ -40,7 +54,6 @@ class AdopsReportScrapper::SovrnClient < AdopsReportScrapper::BaseClient
 
   def request_report
     @client.visit 'https://meridian.sovrn.com/#account/my_downloads'
-    @client.save_screenshot
     sleep 5
     if @client.find_all(:xpath, '//input[@value="domestic_and_international"]').count == 0
       login
@@ -60,15 +73,14 @@ class AdopsReportScrapper::SovrnClient < AdopsReportScrapper::BaseClient
     @client.find_all(:xpath, '//button[text()=" Download "]').first.click
 
     sleep 2
-
-    url = @client.driver.network_traffic[-1].url
-    headers = @client.driver.network_traffic[-1].headers
-
-    @response = HTTPClient.get url, header: headers.map{ |header| [header['name'], header['value']] }.to_h
   end
 
   def extract_data_from_report
-    rows = CSV.parse @response.body
+    rows = CSV.parse File.read("#{@download_dir}/adstats_all_traffic.csv")
     @data = rows[6..-1]
+  end
+
+  def clean_up_download_dir
+    FileUtils.rm_rf(Dir.glob("#{@download_dir}/*"))
   end
 end

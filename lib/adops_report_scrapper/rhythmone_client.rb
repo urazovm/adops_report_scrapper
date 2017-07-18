@@ -33,12 +33,17 @@ class AdopsReportScrapper::RhythmoneClient < AdopsReportScrapper::BaseClient
   def scrap
     date_str = @date.strftime('%Y%m%d')
     data_obj = nil
+    flag_valid_data_found = false
     5.times do
       response = HTTPClient.get("https://api.portal.rhythmone.com/v1/publishers/#{@publisher_id}/reports/standard_report", { ad_dimension: 0, endDate: date_str, endDateType: 1, groupBy1: 1, groupByTimePeriodType: 1, rmp_placement: 0, startDate: date_str, startDatePredefined: 0, startDateType: 1 }, { 'Authorization' => "Bearer #{@access_token}" })
       data_obj = JSON.parse response.body
-      break if data_obj.is_a? Array
+      if data_obj.is_a?(Array) && !response.body.include? 'Data is still processing'
+        flag_valid_data_found = true
+        break
+      end
       sleep 5
     end
+    fail 'rhythmone report failed' unless flag_valid_data_found
     @data = data_obj
   end
 end

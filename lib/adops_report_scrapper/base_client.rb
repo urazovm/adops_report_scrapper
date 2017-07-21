@@ -47,6 +47,7 @@ class AdopsReportScrapper::BaseClient
     @client = Capybara::Session.new(:poltergeist)
     @client.driver.browser.js_errors = false
     @client.driver.resize(1920, 985)
+    @client.driver.execute_script('if (localStorage && localStorage.clear) localStorage.clear()')
   end
 
   def login

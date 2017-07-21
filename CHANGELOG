@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 0.2.31
+reset localstorage before each run
+
 ## 0.2.30
 make rhythmone more robust
 

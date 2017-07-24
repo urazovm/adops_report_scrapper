@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 0.2.33
+add lkqd
+
 ## 0.2.32
 reset localstorage before each run
 

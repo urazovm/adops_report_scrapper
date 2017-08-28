@@ -39,6 +39,7 @@ class AdopsReportScrapper::SovrnClient < AdopsReportScrapper::BaseClient
     @client.fill_in 'login_username', :with => @login
     @client.fill_in 'login_password', :with => @secret
     @client.click_link 'Log In'
+    sleep 5
 
     begin
       @client.find :xpath, '//*[text()="Account"]'
@@ -60,15 +61,20 @@ class AdopsReportScrapper::SovrnClient < AdopsReportScrapper::BaseClient
       @client.visit 'https://meridian.sovrn.com/#account/my_downloads'
       sleep 5
     end
-    @client.find(:xpath, '//input[@value="domestic_and_international"]').set(true)
 
     @client.fill_in 'adstats-date-range-start-month', :with => @date.strftime('%m')
+    @client.find(:xpath, '//input[@value="domestic_and_international"]').set(true)
     @client.fill_in 'adstats-date-range-start-day', :with => @date.strftime('%d')
+    @client.find(:xpath, '//input[@value="domestic_and_international"]').set(true)
     @client.fill_in 'adstats-date-range-start-year', :with => @date.strftime('%Y')
+    @client.find(:xpath, '//input[@value="domestic_and_international"]').set(true)
 
     @client.fill_in 'adstats-date-range-end-month', :with => @date.strftime('%m')
+    @client.find(:xpath, '//input[@value="domestic_and_international"]').set(true)
     @client.fill_in 'adstats-date-range-end-day', :with => @date.strftime('%d')
+    @client.find(:xpath, '//input[@value="domestic_and_international"]').set(true)
     @client.fill_in 'adstats-date-range-end-year', :with => @date.strftime('%Y')
+    @client.find(:xpath, '//input[@value="domestic_and_international"]').set(true)
 
     @client.find_all(:xpath, '//button[text()=" Download "]').first.click
 

@@ -7,7 +7,7 @@ require 'adops_report_scrapper'
 require 'byebug'
 
 desc 'Collect all data'
-task :all => [:anyclip, :openx, :tremor, :brightroll, :yellowhammer, :adaptv, :fourninefive, :adx, :revcontent, :gcs, :browsi, :netseer, :sonobi, :nativo, :adsupply, :marfeel, :adsense, :criteo, :triplelift, :conversant, :liveintent, :adiply, :contentad, :facebookaudience, :adtechus, :adtomation, :rhythmone, :littlethings, :appnexus, :sovrn, :spotxchange, :lkqd] do # openx is the most unstable one, run it first
+task :all => [:anyclip, :openx, :tremor, :brightroll, :yellowhammer, :adaptv, :fourninefive, :adx, :revcontent, :gcs, :browsi, :netseer, :sonobi, :nativo, :adsupply, :marfeel, :adsense, :criteo, :triplelift, :conversant, :liveintent, :adiply, :contentad, :facebookaudience, :adtechus, :adtomation, :rhythmone, :littlethings, :appnexus, :sovrn, :spotxchange, :lkqd, :indexexchange] do # openx is the most unstable one, run it first
   puts '========== You are all set'
 end
 
@@ -224,6 +224,11 @@ end
 desc 'Collect lkqd data'
 task :lkqd do
   save_as_csv :lkqd, :lkqd
+end
+
+desc 'Collect indexexchange data'
+task :indexexchange do
+  save_as_csv :indexexchange, :indexexchange
 end
 
 def date

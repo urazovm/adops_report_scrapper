@@ -231,6 +231,11 @@ task :indexexchange do
   save_as_csv :indexexchange, :indexexchange
 end
 
+desc 'Collect yume data'
+task :yume do
+  save_as_csv :yume, :email
+end
+
 def date
   @date ||= ENV['date'].nil? ? Date.today - 1 : Date.today - ENV['date'].to_i
 end

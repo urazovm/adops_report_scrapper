@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 0.2.38
+require account_id option for springserve client
+
 ## 0.2.37
 add ignore_receive_date option for email client to ignore the email receive date when searching for a report
 

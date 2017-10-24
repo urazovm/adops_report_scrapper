@@ -9,6 +9,8 @@ class AdopsReportScrapper::SpringserveClient < AdopsReportScrapper::BaseClient
   end
 
   def before_quit_with_error
+    fail 'please specify springserve account_id' unless @options['account_id']
+    @account_id = @options['account_id']
   end
 
   private
@@ -22,7 +24,7 @@ class AdopsReportScrapper::SpringserveClient < AdopsReportScrapper::BaseClient
 
     headers = { content_type: :json, accept: :json, authorization: token }
 
-    response = RestClient.post "https://video.springserve.com/api/v0/report", { timezone: 'America/New_York', date_range: 'Yesterday', interval: 'cumulative', dimensions: ['country', 'supply_tag_id']}.to_json, headers
+    response = RestClient.post "https://video.springserve.com/api/v0/report", { timezone: 'America/New_York', date_range: 'Yesterday', interval: 'cumulative', dimensions: ['country', 'supply_tag_id'], account_id: @account_id }.to_json, headers
     data = JSON.parse response
     header = data[0].keys
     @data = [header]

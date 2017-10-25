@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 0.2.39
+tremor removed timezone option
+
 ## 0.2.38
 require account_id option for springserve client
 

@@ -45,9 +45,9 @@ class AdopsReportScrapper::TremorClient < AdopsReportScrapper::BaseClient
     # select date
     @client.find(:css, '#customReportsDateRanges').click
     @client.find(:xpath, '//*[text()="Yesterday"]').click
-    @client.find(:css, '#timezone').click
+    # @client.find(:css, '#timezone').click
     sleep 1
-    @client.find_all(:xpath, '//div[text()="Eastern Standard Time"]').first.click
+    # @client.find_all(:xpath, '//div[text()="Eastern Standard Time"]').first.click
 
     # select group by
     @client.find(:css, '#availableFieldsListSearch').click

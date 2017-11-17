@@ -6,14 +6,12 @@ class AdopsReportScrapper::SpringserveClient < AdopsReportScrapper::BaseClient
   private
 
   def init_client
-  end
-
-  def before_quit_with_error
     fail 'please specify springserve account_id' unless @options['account_id']
     @account_id = @options['account_id']
   end
 
-  private
+  def before_quit_with_error
+  end
 
   def scrap
     date_str = @date.strftime('%Y-%m-%d')

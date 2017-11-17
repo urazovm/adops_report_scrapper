@@ -1,51 +1,43 @@
 require 'date'
 require_relative 'base_client'
+require 'rest-client'
 
 class AdopsReportScrapper::RevcontentClient < AdopsReportScrapper::BaseClient
   private
 
-  def login
-    @client.visit 'https://www.revcontent.com/login'
-    @client.fill_in 'name', :with => @login
-    @client.fill_in 'password', :with => @secret
-    @client.click_button 'Sign In'
-    begin
-      @client.find :xpath, '//*[contains(text(),"Widgets")]'
-    rescue Exception => e
-      raise e, 'Revcontent login error'
-    end
+  def init_client
+  end
+
+  def before_quit_with_error
   end
 
   def scrap
-    @client.find(:xpath, '//*[contains(text(),"Widgets")]').click
-    @client.find(:css, '.fa.fa-calendar').click
-    @client.find(:xpath, '//*[text()="Yesterday"]').click
-    @data = []
-    %w(desktoplg desktop tablet phone unknown).each do |device|
-      request_report(device)
-      extract_data_from_report(device)
-    end
-  end
+    date_str = @date.strftime('%Y-%m-%d')
 
-  def request_report(device)
-    @client.find(:css, '.fa.fa-desktop').click
-    @client.find(:xpath, '//*[text()="All Devices"]').click
-    @client.find(:css, '.fa.fa-desktop').click
-    @client.check device
-  end
+    headers = { cache_control: 'no-cache' }
 
-  def extract_data_from_report(device)
-    rows = @client.find_all :xpath, '//table/*/tr'
-    rows = rows.map { |tr| tr.find_css('td,th').map { |td| td.visible_text } }
-    header = rows.shift
-    rows.shift
-    if @data.count == 0
-      header.unshift 'Device'
-      @data << header
+    response = RestClient.post 'https://api.revcontent.io/oauth/token', { grant_type: 'client_credentials', client_id: @login, client_secret: @secret }, headers
+    data = JSON.parse response
+    token = data['access_token']
+
+    headers = { authorization: "Bearer #{token}", content_type: :json, cache_control: 'no-cache' }
+
+    data = []
+
+    %w(desktoplg desktop tablet mobile unknown).each do |device|
+      response = RestClient.get "https://api.revcontent.io/stats/api/v1.0/widgets?date_from=#{date_str}&date_to=#{date_str}&device=#{device}", headers
+      _data = JSON.parse response
+      _data = _data['data']
+      _data.each { |datum| datum['device'] = device }
+      data += _data
     end
-    rows.each do |row|
-      row.unshift device
+
+    header = data[0].keys
+    @data = [header]
+    @data += data.map do |datum|
+      header.map { |key| datum[key] }
     end
-    @data += rows
+
+    byebug
   end
 end

@@ -1,165 +1,52 @@
 require 'date'
 require_relative 'base_client'
+require_relative '../helpers/ox3client'
+require 'csv'
 
 class AdopsReportScrapper::OpenxClient < AdopsReportScrapper::BaseClient
-  REPORT_NAME = 'Ad Server Report for adops_report_scrapper'
+  def date_supported?(date = nil)
+    _date = date || @date
+    return true if _date >= Date.today - 2
+    false
+  end
 
   private
 
-  def login
-    @client.driver.resize 1920, 700
-    fail 'please specify openx account prefix' unless @options['account_prefix']
-    @account_prefix = @options['account_prefix']
-    @client.visit "http://#{@account_prefix}.openx.net/"
-    @client.fill_in 'Email', :with => @login
-    @client.fill_in 'Password', :with => @secret
-    @client.click_button 'Submit'
-    begin
-      @client.find :xpath, '//*[text()="Reports"]'
-    rescue Exception => e
-      raise e, 'Openx login error'
-    end
+  def init_client
+    fail 'please specify openx consumer_key' unless @options['consumer_key']
+    fail 'please specify openx consumer_secret' unless @options['consumer_secret']
+    fail 'please specify openx realm' unless @options['realm']
+    fail 'please specify openx site_url' unless @options['site_url']
+    @consumer_key = @options['consumer_key']
+    @consumer_secret = @options['consumer_secret']
+    @realm = @options['realm']
+    @site_url = @options['site_url']
+  end
+
+  def before_quit_with_error
   end
 
   def scrap
-    request_report
-  end
-
-  def request_report
-    sleep 5
-    @client.visit 'http://yahoo.com'
-    sleep 5
-    @client.visit "http://#{@account_prefix}.openx.net/#/reports?tab=my_reports"
-    sleep 5
-
-    begin
-      tries ||= 6
-      @client.find(:css, '#report_frame')
-    rescue Exception => e
-      retry unless (tries -= 1).zero?
-      fail 'cannot find report frame'
-    end
-
-    create_report_if_not_exist
+    start_date_str = @date.strftime('%Y-%m-%d 00:00:00')
+    end_date_str = @date.strftime('%Y-%m-%d 23:59:59')
     
-    @client.within_frame @client.find(:css, '#report_frame') do
-      @client.find(:xpath, "//a[text()=\"#{REPORT_NAME}\"]").click
+    ox3 = OX3APIClient.new(@login, @secret, @site_url, @consumer_key, @consumer_secret, @realm)
 
-      begin
-        tries ||= 6
-        @client.find(:css, '.myFrame')
-      rescue Exception => e
-        retry unless (tries -= 1).zero?
-      end
-      
-      @client.within_frame @client.find(:css, '.myFrame') do
-        begin
-          tries ||= 18
-          @client.find(:xpath, '//option[text()="500"]')
-        rescue Exception => e
-          retry unless (tries -= 1).zero?
-        end
-        
-        @client.find(:xpath, '//option[text()="500"]').select_option
-        extract_data_from_report
-      end
+    response = ox3.get("/report/run?report=inv_rev&start_date=#{URI.escape(start_date_str)}&end_date=#{URI.escape(end_date_str)}&report_format=csv&do_break=AdUnit,Country&saleschannel=SALESCHANNEL.OPENXMARKET")
+    report_pickup_url = @site_url + JSON.parse(response)['url']
+    report_csv_data = nil;
+    open(report_pickup_url) { |f| report_csv_data = f.read }
+
+    @data = CSV.parse(report_csv_data)
+
+    while @data.count > 0
+      row = @data.shift
+      break if row.first == 'Report Data:'
     end
-    sleep 5
-  end
 
-  def create_report_if_not_exist
-    @client.within_frame @client.find(:css, '#report_frame') do
-      ready_elem = nil
-      begin
-        tries ||= 6
-        ready_elem = @client.find(:xpath, '//*[text()="Preconfigured Reports"]')
-      rescue Exception => e
-        retry unless (tries -= 1).zero?
-      end
-
-      fail 'openx report page not ready' unless ready_elem
-    
-      if @client.find_all(:xpath, "//a[text()=\"#{REPORT_NAME}\"]").count == 0
-
-        # create report if not exist
-        @client.find(:xpath, '//*[contains(text(),"Create Report")]').click
-        @client.find(:xpath, '//li/*[text()="Ad Server Report"]').click
-
-        begin
-          tries ||= 6
-          @client.find(:css, '.myFrame')
-        rescue Exception => e
-          retry unless (tries -= 1).zero?
-        end
-        
-        @client.within_frame @client.find(:css, '.myFrame') do
-
-          @client.find(:xpath, '//*[text()="Last Seven Days"]').click
-          @client.find(:xpath, '//*[text()="Yesterday"]').click
-          @client.find(:xpath, '//*[@value="Next"]').trigger('click')
-          sleep 2
-
-          @client.find(:xpath, '//*[text()="Ad Unit"]').click
-          @client.find(:xpath, '//img[../../td//*[text()="User"]]').click
-          @client.find(:xpath, '//*[text()="Country"]').click
-          @client.find(:xpath, '//*[text()="Device Category"]').click
-          @client.find(:xpath, '//*[@value="Next"]').trigger('click')
-          sleep 2
-          
-          @client.find(:xpath, '//*[text()="Paid Impressions"]').click
-          @client.find(:xpath, '//*[text()="Impressions Delivered"]').click
-          @client.find(:xpath, '//*[text()="Ad Requests"]').click
-          @client.find(:xpath, '//img[../../td//*[text()="Revenue"]]').click
-          @client.find(:xpath, '//*[text()="Publisher Revenue"]').click
-          @client.find(:xpath, '//img[../../td//*[text()="Clicks"]]').click
-          @client.find(:xpath, '//div[text()="Clicks"]').click
-          @client.find(:xpath, '//*[@value="Next"]').trigger('click')
-          sleep 2
-
-          @client.find(:xpath, '//*[@value="Save"]').trigger('click')
-
-          begin
-            tries ||= 6
-            @client.find(:xpath, '//*[text()="Save Report"]')
-          rescue Exception => e
-            retry unless (tries -= 1).zero?
-          end
-          
-          @client.fill_in 'saveAsReportName', :with => REPORT_NAME
-          @client.find(:xpath, '//*[@value="Save Report"]').trigger('click')
-
-          begin
-            tries ||= 6
-            @client.find(:xpath, '//*[text()="Report Saved"]')
-          rescue Exception => e
-            retry unless (tries -= 1).zero?
-          end
-          
-          @client.find(:xpath, '//*[text()="Back to My Reports"]').trigger('click')
-        end
-        sleep 2
-      end
-    end
-  end
-
-  def extract_data_from_report
-    @data = []
-    loop do
-      18.times do
-        sleep 10
-        break if @client.find_all(:xpath, '//table[@id="table_UniqueReportID"]/*/tr').count > 0
-      end
-      rows = @client.find_all :xpath, '//table[@id="table_UniqueReportID"]/*/tr'
-      rows = rows.to_a
-      header = rows.shift
-      if @data.count == 0
-        n_header = header.find_css('td,th').map { |td| td.visible_text }
-        @data << n_header
-      end
-      @data += rows.map { |tr| tr.find_css('td,th').map { |td| td.visible_text } }.reject { |row| row[0] == 'Total' }
-      pagee = @client.find(:xpath, '//*[contains(text(),"Showing rows")]').text.match(/-(\d+) of (\d+)\./).captures
-      break if pagee[0] == pagee[1]
-      @client.find_all(:css, '#paginationNext').first.trigger('click')
+    while @data.count > 0
+      break if @data.last.first == 'Real-time Buyer'
+      @data.pop
     end
   end
 end

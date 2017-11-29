@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 0.2.45
+reimplement openx with their API
+
 ## 0.2.41
 springserve client bug fix for account_id option. revcontent client refactor using their rest api
 

@@ -29,7 +29,7 @@ class AdopsReportScrapper::AdsupplybuyerClient < AdopsReportScrapper::BaseClient
     date_str = @date.strftime('%-m/%-d/%Y')
     time_zone_id = 'Eastern Standard Time'
 
-    response = RestClient.post "https://ui.adsupply.com/PublicPortal/Advertiser/#{@login}/Report/Export", SqlCommandId: '', ExportToExcel: 'False', IsOLAP: 'False', DateFilter: date_str, TimeZoneId: time_zone_id, Grouping: '1', 'DimAdvertiser.Value': "#{@login}~", 'DimAdvertiser.IsActive': 'True', 'DimCampaign.Value': '', 'DimCampaign.IsActive': 'True', ApiKey: @secret
+    response = RestClient.post "https://ui.adsupply.com/PublicPortal/Advertiser/#{@login}/Report/Export", SqlCommandId: '', ExportToExcel: 'False', IsOLAP: 'False', DateFilter: date_str, TimeZoneId: time_zone_id, Grouping: '1', 'DimAdvertiser.Value': "#{@login}~", 'DimAdvertiser.IsActive': 'True', 'DimMedia.Value': '', 'DimMedia.IsActive': 'True', ApiKey: @secret
 
     data = JSON.parse response
     unless data[0]

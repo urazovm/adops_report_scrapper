@@ -5,16 +5,12 @@ class AdopsReportScrapper::AdtechusClient < AdopsReportScrapper::BaseClient
   private
 
   def login
+    byebug
     @client.visit 'http://marketplace.adtechus.com'
     @client.fill_in 'Username', :with => @login
-    begin
-      @client.fill_in 'Password', :with => @secret
-    rescue Exception => e
-      puts 'You are selected in the Beta that sucks!!!'
-      @client.find_all(:button).first.click
-      sleep 10
-      @client.fill_in 'Password', :with => @secret
-    end
+    @client.find_all(:button).first.click
+    sleep 10
+    @client.fill_in 'Password', :with => @secret
     @client.find_all(:button).first.click
     sleep 10
     begin
@@ -29,13 +25,14 @@ class AdopsReportScrapper::AdtechusClient < AdopsReportScrapper::BaseClient
   end
 
   def request_report
+    byebug
     @client.find(:xpath, '//*[text()="REPORTING"]').click
     wait_for_loading
     @client.visit(@client.find(:css, '#mainwindow')[:src])
     wait_for_loading
     report_id = @client.find_all(:xpath, '//tr[./td/div/span[text()="Placement fill rate report"]]')[-1][:id]
     report_id = report_id.tr 'row_', ''
-    @client.visit "https://marketplace.adtechus.com/h2/reporting/showReport.do?action=showreportpage._._.#{report_id}"
+    @client.visit "https://console.onedisplaymp.aol.com/h2/reporting/showReport.do?action=showreportpage._._.#{report_id}"
     @client.within_frame @client.find(:css, '#reportwindow') do
       @client.within_frame @client.find(:xpath, '//iframe[@name="uid_2"]') do
         extract_data_from_report

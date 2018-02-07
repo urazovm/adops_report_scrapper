@@ -5,7 +5,6 @@ class AdopsReportScrapper::AdtechusClient < AdopsReportScrapper::BaseClient
   private
 
   def login
-    byebug
     @client.visit 'http://marketplace.adtechus.com'
     @client.fill_in 'Username', :with => @login
     @client.find_all(:button).first.click
@@ -25,7 +24,6 @@ class AdopsReportScrapper::AdtechusClient < AdopsReportScrapper::BaseClient
   end
 
   def request_report
-    byebug
     @client.find(:xpath, '//*[text()="REPORTING"]').click
     wait_for_loading
     @client.visit(@client.find(:css, '#mainwindow')[:src])

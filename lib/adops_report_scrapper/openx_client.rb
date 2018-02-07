@@ -29,7 +29,7 @@ class AdopsReportScrapper::OpenxClient < AdopsReportScrapper::BaseClient
   def scrap
     start_date_str = @date.strftime('%Y-%m-%d 00:00:00')
     end_date_str = @date.strftime('%Y-%m-%d 23:59:59')
-    
+
     ox3 = OX3APIClient.new(@login, @secret, @site_url, @consumer_key, @consumer_secret, @realm)
 
     response = ox3.get("/report/run?report=inv_rev&start_date=#{URI.escape(start_date_str)}&end_date=#{URI.escape(end_date_str)}&report_format=csv&do_break=AdUnit,Country&saleschannel=SALESCHANNEL.OPENXMARKET")

@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 0.2.49
+fix for aol legacy report
+
 ## 0.2.45
 reimplement openx with their API
 

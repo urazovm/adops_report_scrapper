@@ -7,14 +7,9 @@ class AdopsReportScrapper::AdaptvClient < AdopsReportScrapper::BaseClient
   def login
     @client.visit 'https://onevideo.aol.com/#/logon'
     @client.fill_in 'Username', :with => @login
-    begin
-      @client.fill_in 'Password', :with => @secret
-    rescue Exception => e
-      puts 'You are selected in the Beta that sucks!!!'
-      @client.find_all(:button).first.click
-      sleep 10
-      @client.fill_in 'Password', :with => @secret
-    end
+    @client.find_all(:button).first.click
+    sleep 10
+    @client.fill_in 'Password', :with => @secret
     @client.find_all(:button).first.click
     sleep 10
     begin
@@ -34,7 +29,7 @@ class AdopsReportScrapper::AdaptvClient < AdopsReportScrapper::BaseClient
     @client.find(:xpath, '//*[text()="Close"]').click if @client.find_all(:xpath, '//*[text()="Close"]').count > 0
 
     @client.find(:xpath, '//*[text()="Analytics"]').click
-    @client.find(:xpath, '//*[text()="Reports"]').click
+    @client.find(:xpath, '//*[text()="Reports (Legacy)"]').click
     wait_for_spin
     @client.find(:xpath, '//*[text()="New Report"]').click
     wait_for_spin
